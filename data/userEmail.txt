@@ -1,0 +1,3 @@
+--Inserer les email utilisateurs ici (ligne à supprimer) --
+example@gmail.com
+user@gmail.com
