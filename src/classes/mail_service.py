@@ -19,6 +19,9 @@ class MailNews:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Document</title>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
             <style>
                 *{{font-family:'sans-serif';margin:0;padding:0;}}
                 .banner{{display:flex; justify-content: center;align-items: center;margin:auto;}}
@@ -95,7 +98,7 @@ class MailNews:
             <table>
             <tr>
                     <th>Monnaie</th>
-                    <th>Valeure</th>
+                    <th>Valeur</th>
             </tr>
             {coins}
             </table>      
@@ -145,12 +148,13 @@ class MailNews:
             sender = os.getenv('SMTP_EMAIL')
             Mailpass = os.getenv('SMTP_PASS')
             self.formatMailbody()
-            self.msg['to']= receiver
-            self.msg['subject']="Your Daily News"
-            self.msg['From']= sender
-            self.msg.add_alternative(self.Mailbody,subtype="html")
-            
-            with smtplib.SMTP_SSL("smtp.gmail.com", os.getenv('SMTP_PORT')) as smtp:
+            self.msg['To'] = receiver
+            self.msg['Subject'] = "Your Daily News"
+            self.msg['From'] = sender
+            self.msg.add_alternative(self.Mailbody, subtype="html")
+
+            smtp_port = int(os.getenv('SMTP_PORT', '465'))
+            with smtplib.SMTP_SSL("smtp.gmail.com", smtp_port) as smtp:
                 smtp.login(sender, Mailpass)
                 print("Login successful. Sending message...")
                 smtp.send_message(self.msg)
@@ -163,9 +167,8 @@ class MailNews:
         try:
             with open("data/userEmail.txt","r") as f:
                 users = f.readlines()
-                for user in users:
-                    user=user.replace('\n',"")
-                    self.sendMail(user)
+                users = [ user.replace('\n','') for user in users ]
+                self.sendMail(','.join(users))
             
         except Exception as e:
             print(f"Error occured while sending email: {e}")
